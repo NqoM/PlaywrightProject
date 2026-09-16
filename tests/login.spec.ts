@@ -1,4 +1,4 @@
-import { test, expect } from '../src/fixtures/CustomFixtures';
+import { test, expect } from '../src/fixtures/CustomFixtures.ts';
 
 /**
  * This test verifies login itself, so it deliberately uses the plain

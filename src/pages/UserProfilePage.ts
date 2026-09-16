@@ -1,18 +1,38 @@
-import { test, expect } from '../src/fixtures/CustomFixtures';
-import path from 'path';
-import { testFiles } from '../src/data/testData';
-import { recordNetworkRequests, saveDiscoveredEndpoints } from '../src/utils/networkRecorder';
+import { Page, Locator, expect } from '@playwright/test';
+import { BasePage } from './BasePage';
 
-test('user can upload a new profile picture', async ({ page, authenticatedPage, userProfilePage }) => {
-  const captured = recordNetworkRequests(page);
+export class UserProfilePage extends BasePage {
+  readonly editProfileLink: Locator;
+  readonly fileInput: Locator;
+  readonly saveButton: Locator;
 
-  await authenticatedPage.openMenu();
-  await authenticatedPage.goToMyProfile();
-  await userProfilePage.goToEditProfile();
+  constructor(page: Page) {
+    super(page);
+    this.editProfileLink = page.locator('button', { hasText: 'Edit Profile' });
+    this.fileInput = page.locator('#profilePicture');
+    this.saveButton = page.locator('button[type="submit"]', { hasText: 'Save Changes' });
+  }
 
-  const filePath = path.resolve(process.cwd(), testFiles.newProfilePicture);
-  await userProfilePage.uploadProfilePicture(filePath);
-  await userProfilePage.saveAndExpectSuccess();
+  async goToEditProfile() {
+    await this.editProfileLink.click();
+  }
 
-  saveDiscoveredEndpoints(captured);
-});
+  async uploadProfilePicture(filePath: string) {
+    await this.fileInput.setInputFiles(filePath);
+  }
+
+  async saveAndExpectSuccess() {
+    const dialogPromise = new Promise<string>((resolve) => {
+      this.page.once('dialog', async (dialog) => {
+        const message = dialog.message();
+        await dialog.accept();
+        resolve(message);
+      });
+    });
+
+    await this.saveButton.click();
+    const alertMessage = await dialogPromise;
+
+    expect(alertMessage).toContain('Profile updated successfully');
+  }
+}

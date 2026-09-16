@@ -1,43 +1,18 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../src/fixtures/CustomFixtures';
 import path from 'path';
+import { testFiles } from '../src/data/testData';
+import { recordNetworkRequests, saveDiscoveredEndpoints } from '../src/utils/networkRecorder';
 
-test('upload new profile picture', async ({ page }) => {
-  const capturedRequests: { url: string; method: string }[] = [];
+test('user can upload a new profile picture', async ({ page, authenticatedPage, userProfilePage }) => {
+  const captured = recordNetworkRequests(page);
 
-  page.on('request', (req) => {
-    capturedRequests.push({ url: req.url(), method: req.method() });
-  });
+  await authenticatedPage.openMenu();
+  await authenticatedPage.goToMyProfile();
+  await userProfilePage.goToEditProfile();
 
-  // 1. Login
-  await page.goto('/login');
-  await page.fill('#username', process.env.TEST_USERNAME!);
-  await page.fill('#password', process.env.TEST_PASSWORD!);
-  await page.click('button[type="submit"]');
-  await expect(page).toHaveURL(/dashboard/);
+  const filePath = path.resolve(process.cwd(), testFiles.newProfilePicture);
+  await userProfilePage.uploadProfilePicture(filePath);
+  await userProfilePage.saveAndExpectSuccess();
 
-  // 2. Click menu
-  await page.click('[data-testid="menu-button"]');
-
-  // 3. Click my profile
-  await page.click('text=My Profile');
-
-  // 4. Click edit profile
-  await page.click('text=Edit Profile');
-
-  // 5. Upload a new profile picture
-  const filePath = path.join(__dirname, 'fixtures', 'test-avatar.jpg');
-  await page.setInputFiles('input[type="file"]', filePath);
-  await page.click('button:has-text("Save")');
-
-  // 6. Ensure the profile picture is updated
-  await expect(page.locator('img.profile-picture')).toHaveAttribute(
-    'src',
-    /test-avatar|updated/
-  );
-
-  console.log('Captured endpoints:', capturedRequests);
-  require('fs').writeFileSync(
-    'test-results/discovered-endpoints.json',
-    JSON.stringify(capturedRequests, null, 2)
-  );
+  saveDiscoveredEndpoints(captured);
 });

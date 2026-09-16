@@ -50,10 +50,11 @@ export default defineConfig({
     //trace: 'on-first-retry',
   //},
   baseURL: process.env.BASE_URL || 'https://ndosisimplifiedautomation.vercel.app',
-    trace: 'on-first-retry',
-    screenshot: 'on',
-    video: 'retain-on-failure',
-    actionTimeout: 15_000,
+  viewport: { width: 1920, height: 1080 },
+  trace: 'on-first-retry',
+  screenshot: 'on',
+  video: 'retain-on-failure',
+  actionTimeout: 15_000,
   },
   
   /* Configure projects for major browsers */

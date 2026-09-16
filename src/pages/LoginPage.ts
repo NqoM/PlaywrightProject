@@ -34,10 +34,11 @@ export class LoginPage extends BasePage {
    * route), so goto('/') navigates there.
    */
   async login(username: string, password: string) {
-    await this.goto('/');
+    await this.goto('/#practice');
     await this.usernameInput.fill(username);
     await this.passwordInput.fill(password);
     await this.submitButton.click();
+    await this.page.waitForLoadState('networkidle'); // wait for the page to settle after login
   }
 
   /**

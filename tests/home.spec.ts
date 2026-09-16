@@ -1,4 +1,4 @@
-import { test, expect } from '../src/fixtures/CustomFixtures';
+import { test, expect } from '../src/fixtures/CustomFixtures.ts';
 
 test('user can navigate from menu to my profile', async ({ page, authenticatedPage }) => {
   await authenticatedPage.openMenu();
