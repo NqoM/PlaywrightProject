@@ -6,33 +6,22 @@ Website under test: https://ndosisimplifiedautomation.vercel.app
 
 ## What this covers
 
-**UI flow** (tests/1-login.spec.ts, tests/2-home.spec.ts, tests/3-profile.spec.ts)
-1. Log in to the ndosi automation test site
-2. Click the menu
-3. Click "My Profile"
-4. Click "Edit Profile"
-5. Upload a new profile picture
-6. Ensure the profile picture is updated (verified via the site's own
-   success confirmation)
- 
+**UI** (tests/1-login.spec.ts, tests/2-home.spec.ts, tests/3-profile.spec.ts)
+Login -> Menu -> My Profile -> Edit Profile -> Upload picture -> Verify success.
+
 Split across three separate spec files (one per screen) rather than one
 long test, using Playwright's custom fixtures for shared setup like login
 
-**API flow** (tests/4-api-validation.spec.ts)
-- While 3-profile.spec.ts runs, every XHR/fetch network request made
-  during the flow is automatically recorded
-- The API test suite reads that discovered list and re-requests each
-  endpoint directly, asserting the response status isn't a server error
+
+**API** (tests/4-api-validation.spec.ts): endpoints are discovered
+automatically during the UI flow (via network interception) and
+re-validated for non-error response codes.
+
 
 **Reporting**:
  HTML + JSON reports, screenshots on every test, video on failure.
  
-**CI/CD**
-- Runs automatically on every push/PR to main
-- Runs on a nightly schedule at midnight SAST
-- Can also be triggered manually via GitHub's workflow_dispatch
  
-
 ## Tech stack
 
 Playwright, TypeScript, dotenv (local credentials), GitHub Actions (CI).
@@ -64,14 +53,14 @@ PlaywrightProject/
 │   ├── 3-profile.spec.ts
 │   └── 4-api-validation.spec.ts
 ├── .env                         # Local credentials (never committed)
-├── .env.example
 ├── .gitignore
 ├── playwright.config.ts
 ├── package.json
 └── README.md
 
 ```
-Test files are numbered to guarantee execution order — `4-api-validation` depends on `3-profile` running first in the same command, since that's what populates `discovered-endpoints.json`.
+Test files are numbered to guarantee execution order - 4-api-validation depends on 3-profile running first in the same command, since that's what populates discovered-endpoints.json.
+
 
 ## Setup
 
@@ -96,10 +85,11 @@ npx playwright show-report       # view last report
 
 Tests run sequentially (`workers: 1`) — running them in parallel caused login race conditions against the shared test account.
 
-## CI/CD
 
-`.github/workflows/playwright.yml` runs on push/PR to `main`, nightly at midnight SAST (`cron: '0 22 * * *'`, since GitHub Actions cron is UTC and SAST is UTC+2), and manually via `workflow_dispatch`.
-
+**CI/CD**
+- Runs automatically on every push/PR to main
+- Runs on a nightly schedule at midnight SAST
+- Can also be triggered manually via GitHub's workflow_dispatch
 
 **Required GitHub secrets:** `BASE_URL`, `TEST_USERNAME`, `TEST_PASSWORD`.
 
