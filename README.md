@@ -6,7 +6,8 @@ Website under test: https://ndosisimplifiedautomation.vercel.app
 
 ## What this covers
 
-**UI** (tests/1-login.spec.ts, tests/2-home.spec.ts, tests/3-profile.spec.ts)
+**UI** (tests/1-login.spec.ts, tests/2-home.spec.ts, tests/3-profile.spec.ts):    
+ 
 Login -> Menu -> My Profile -> Edit Profile -> Upload picture -> Verify success.
 
 Split across three separate spec files (one per screen) rather than one
