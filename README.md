@@ -24,9 +24,8 @@ long test, using Playwright's custom fixtures for shared setup like login
 - The API test suite reads that discovered list and re-requests each
   endpoint directly, asserting the response status isn't a server error
 
-
-**Reporting**: HTML + JSON reports, screenshots on every test, video on failure.
-
+**Reporting**:
+ HTML + JSON reports, screenshots on every test, video on failure.
  
 **CI/CD**
 - Runs automatically on every push/PR to main
@@ -42,7 +41,6 @@ Playwright, TypeScript, dotenv (local credentials), GitHub Actions (CI).
 ## Project structure
 
 ```
-
 PlaywrightProject/
 ├── .github/
 │   └── workflows/
@@ -52,8 +50,7 @@ PlaywrightProject/
 │   │   └── TestData.ts          # File paths + expected status codes (no credentials)
 │   ├── fixtures/
 │   │   ├── CustomFixtures.ts    # Custom Playwright fixtures
-│   │   ├── test-avatar.jpg      # Sample image used for upload
-│   │   └── invalid-file.txt     # Non-image file for negative testing
+│   │   └── test-avatar.jpg      # Sample image used for upload
 │   ├── pages/
 │   │   ├── BasePage.ts          # Shared base class
 │   │   ├── LoginPage.ts         # Page Object: login screen
@@ -75,7 +72,6 @@ PlaywrightProject/
 
 ```
 Test files are numbered to guarantee execution order — `4-api-validation` depends on `3-profile` running first in the same command, since that's what populates `discovered-endpoints.json`.
-
 
 ## Setup
 
@@ -104,14 +100,16 @@ Tests run sequentially (`workers: 1`) — running them in parallel caused login 
 
 `.github/workflows/playwright.yml` runs on push/PR to `main`, nightly at midnight SAST (`cron: '0 22 * * *'`, since GitHub Actions cron is UTC and SAST is UTC+2), and manually via `workflow_dispatch`.
 
+
 **Required GitHub secrets:** `BASE_URL`, `TEST_USERNAME`, `TEST_PASSWORD`.
 
 
-## Lesson learned / Notable issues found while building this
+## Lessons learned /  Issues found while building this
 
-- Login form lives at `/#practice`, not the site root.
 - Browser wasn't opening at full screen size when running tests, causing the "Menu" button to be cut off and not clickable. Fixed by adding an explicit `viewport` size in `playwright.config.ts` to make the browser window wider.
 - Running tests in parallel caused intermittent login and navigation failures, since multiple tests were logging into the same live test account at the same time.Fixed with `fullyParallel: false` and  `workers: 1` in the Playwright.config file.
 - Playwright runs spec files in alphabetical order by default, so `api-validation.spec.ts` ran before `profile.spec.ts` and always found an empty results file. Fixed by numbering test files (`1-login`, `2-home`, `3-profile`, `4-api-validation`) to guarantee execution order.
 -  A file casing mismatch (TestData.ts vs testData.ts) passed locally on Windows but failed in CI, since Linux file systems are case-sensitive and Windows' aren't. Fixed by renaming through a temporary filename first (`git mv TestData.ts TestData-temp.ts` then `git mv TestData-temp.ts TestData.ts`), since a direct same-name-different-case rename isn't reliably recognized by git on Windows.
 - Local `.env` values don't automatically transfer to CI — the same  `BASE_URL`, `TEST_USERNAME`, and `TEST_PASSWORD` values had to be added separately as GitHub repository secrets before the workflow could log in successfully.
+- File-based screenshots (`page.screenshot({ path: '...' })`) create real files on disk, but don't appear inside `npx playwright show-report` — the report only displays screenshots explicitly registered via `testInfo.attach()`. Switched to capturing screenshots as in-memory buffers and attaching them directly to the test's report entry, so evidence of the upload (before and after saving) is visible directly in the HTML report rather than as separate loose files.
+- Full-page screenshots (`fullPage: true`) on this site visually duplicate the sticky navbar partway down the image, since Playwright stitches together multiple scroll positions and the navbar re-renders at each one. Removing `fullPage: true` avoided the duplication but cut off the actual profile content below the fold instead. Kept `fullPage: true`, since the navbar duplication is cosmetic and doesn't obscure the evidence, whereas cropping the content would.
