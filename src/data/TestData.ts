@@ -8,7 +8,6 @@
 
 export const testFiles = {
   newProfilePicture: 'src/fixtures/test-avatar.jpg',
-  invalidFileType: 'src/fixtures/invalid-file.txt',
 };
 
 export const expectedStatusCodes: Record<string, number[]> = {

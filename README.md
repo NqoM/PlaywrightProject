@@ -20,16 +20,31 @@ Playwright, TypeScript, dotenv (local credentials), GitHub Actions (CI).
 ## Project structure
 
 ```
-src/
-├── data/TestData.ts # File paths + expected status codes
-├── fixtures/ # CustomFixtures.ts + test image fixtures
-├── pages/ # Page objects: BasePage, LoginPage, HomePage, UserProfilePage
-└── utils/networkRecorder.ts # Captures API calls during UI flow
-tests/
-├── 1-login.spec.ts
-├── 2-home.spec.ts
-├── 3-profile.spec.ts
-└── 4-api-validation.spec.ts
+PlaywrightProject/
+├── .github/workflows/playwright.yml
+├── src/
+│   ├── data/TestData.ts
+│   ├── fixtures/
+│   │   ├── CustomFixtures.ts
+│   │   └── test-avatar.jpg
+│   ├── pages/
+│   │   ├── BasePage.ts
+│   │   ├── LoginPage.ts
+│   │   ├── HomePage.ts
+│   │   └── UserProfilePage.ts
+│   └── utils/networkRecorder.ts
+├── tests/
+│   ├── 1-login.spec.ts
+│   ├── 2-home.spec.ts
+│   ├── 3-profile.spec.ts
+│   └── 4-api-validation.spec.ts
+├── .env.example
+├── .gitignore
+├── playwright.config.ts
+├── package.json
+└── README.md
+
+
 ```
 
 Test files are numbered to guarantee execution order — `4-api-validation` depends on `3-profile` running first in the same command, since that's what populates `discovered-endpoints.json`.
