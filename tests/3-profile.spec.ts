@@ -1,6 +1,6 @@
 import { test, expect } from '../src/fixtures/CustomFixtures';
 import path from 'path';
-import { testFiles } from '../src/data/testData';
+import { testFiles } from '../src/data/TestData';
 import { recordNetworkRequests, saveDiscoveredEndpoints } from '../src/utils/networkRecorder';
 
 test('user can upload a new profile picture', async ({ page, authenticatedPage, userProfilePage }) => {
