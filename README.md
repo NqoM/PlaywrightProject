@@ -1,53 +1,81 @@
 # Profile Picture Automation — Ndosi Test Site
 
-End-to-end UI and API automation for the "upload a profile picture" flow on the ndosi automation practice site, built with **Playwright + TypeScript**.
+End-to-end UI and API automation for the "upload a profile picture" flow on the Ndosi Automation test site, built with **Playwright + TypeScript**.
 
-Live site: https://ndosisimplifiedautomation.vercel.app
+Website under test: https://ndosisimplifiedautomation.vercel.app
 
 ## What this covers
 
-**UI** (`tests/1-login.spec.ts`, `2-home.spec.ts`, `3-profile.spec.ts`): 
-Login → Menu → My Profile → Edit Profile → upload picture → verify success.
+**UI flow** (tests/1-login.spec.ts, tests/2-home.spec.ts, tests/3-profile.spec.ts)
+1. Log in to the ndosi automation test site
+2. Click the menu
+3. Click "My Profile"
+4. Click "Edit Profile"
+5. Upload a new profile picture
+6. Ensure the profile picture is updated (verified via the site's own
+   success confirmation)
+ 
+Split across three separate spec files (one per screen) rather than one
+long test, using Playwright's custom fixtures for shared setup like login
 
-**API** (`tests/4-api-validation.spec.ts`): endpoints are discovered automatically during the UI flow (via network interception) and re-validated for non-error response codes.
+**API flow** (tests/4-api-validation.spec.ts)
+- While 3-profile.spec.ts runs, every XHR/fetch network request made
+  during the flow is automatically recorded
+- The API test suite reads that discovered list and re-requests each
+  endpoint directly, asserting the response status isn't a server error
+
 
 **Reporting**: HTML + JSON reports, screenshots on every test, video on failure.
+
+ 
+**CI/CD**
+- Runs automatically on every push/PR to main
+- Runs on a nightly schedule at midnight SAST
+- Can also be triggered manually via GitHub's workflow_dispatch
+ 
 
 ## Tech stack
 
 Playwright, TypeScript, dotenv (local credentials), GitHub Actions (CI).
 
+
 ## Project structure
 
 ```
+
 PlaywrightProject/
-├── .github/workflows/playwright.yml
+├── .github/
+│   └── workflows/
+│       └── playwright.yml       # CI pipeline (push/PR + nightly midnight SAST + manual trigger)
 ├── src/
-│   ├── data/TestData.ts
+│   ├── data/
+│   │   └── TestData.ts          # File paths + expected status codes (no credentials)
 │   ├── fixtures/
-│   │   ├── CustomFixtures.ts
-│   │   └── test-avatar.jpg
+│   │   ├── CustomFixtures.ts    # Custom Playwright fixtures
+│   │   ├── test-avatar.jpg      # Sample image used for upload
+│   │   └── invalid-file.txt     # Non-image file for negative testing
 │   ├── pages/
-│   │   ├── BasePage.ts
-│   │   ├── LoginPage.ts
-│   │   ├── HomePage.ts
-│   │   └── UserProfilePage.ts
-│   └── utils/networkRecorder.ts
+│   │   ├── BasePage.ts          # Shared base class
+│   │   ├── LoginPage.ts         # Page Object: login screen
+│   │   ├── HomePage.ts          # Page Object: menu, navigation
+│   │   └── UserProfilePage.ts   # Page Object: edit profile, upload, save
+│   └── utils/
+│       └── networkRecorder.ts   # Captures + persists network requests
 ├── tests/
 │   ├── 1-login.spec.ts
 │   ├── 2-home.spec.ts
 │   ├── 3-profile.spec.ts
 │   └── 4-api-validation.spec.ts
+├── .env                         # Local credentials (never committed)
 ├── .env.example
 ├── .gitignore
 ├── playwright.config.ts
 ├── package.json
 └── README.md
 
-
 ```
-
 Test files are numbered to guarantee execution order — `4-api-validation` depends on `3-profile` running first in the same command, since that's what populates `discovered-endpoints.json`.
+
 
 ## Setup
 
@@ -77,7 +105,6 @@ Tests run sequentially (`workers: 1`) — running them in parallel caused login 
 `.github/workflows/playwright.yml` runs on push/PR to `main`, nightly at midnight SAST (`cron: '0 22 * * *'`, since GitHub Actions cron is UTC and SAST is UTC+2), and manually via `workflow_dispatch`.
 
 **Required GitHub secrets:** `BASE_URL`, `TEST_USERNAME`, `TEST_PASSWORD`.
-
 
 
 ## Lesson learned / Notable issues found while building this
