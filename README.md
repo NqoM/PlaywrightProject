@@ -1,4 +1,4 @@
-# Profile Picture Automation — ndosi Test Site
+# Profile Picture Automation — Ndosi Test Site
 
 End-to-end UI and API automation for the "upload a profile picture" flow on the ndosi automation practice site, built with **Playwright + TypeScript**.
 
@@ -6,7 +6,8 @@ Live site: https://ndosisimplifiedautomation.vercel.app
 
 ## What this covers
 
-**UI** (`tests/1-login.spec.ts`, `2-home.spec.ts`, `3-profile.spec.ts`): login → menu → My Profile → Edit Profile → upload picture → verify success.
+**UI** (`tests/1-login.spec.ts`, `2-home.spec.ts`, `3-profile.spec.ts`): 
+Login → Menu → My Profile → Edit Profile → upload picture → verify success.
 
 **API** (`tests/4-api-validation.spec.ts`): endpoints are discovered automatically during the UI flow (via network interception) and re-validated for non-error response codes.
 
