@@ -19,18 +19,20 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 export default defineConfig({
   testDir: './tests',
   /* Run tests in files in parallel */
-  fullyParallel: true,
+  fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  //workers: process.env.CI ? 1 : undefined,
+  workers: 1,
   timeout: 60_000,
+  
+
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   // Multiple reporters: HTML for humans, JSON for CI artifacts / dashboards,
   // list for readable console output while running locally.
-  
   //reporter: 'html',
   reporter: [
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
