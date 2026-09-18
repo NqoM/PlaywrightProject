@@ -1,6 +1,8 @@
 import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 
+// Page Object for the user profile screen: Handles editing the profile and uploading a new profile picture.
+
 export class UserProfilePage extends BasePage {
   readonly editProfileLink: Locator;
   readonly fileInput: Locator;

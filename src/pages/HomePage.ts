@@ -1,7 +1,7 @@
 import { Page, Locator } from '@playwright/test';
 import { BasePage } from './BasePage';
 
-//Page Object for the dashboard screen: menu navigation and the link into "My Profile".
+//Page Object for the dashboard screen: Opens the menu dropdown and navigates to My profile 
  
 export class HomePage extends BasePage {
   readonly menuButton: Locator;
@@ -10,8 +10,6 @@ export class HomePage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.menuButton = page.locator('button.user-pill');
-    // Scoped by text since multiple dropdown items likely share the
-    // same "nav-dropdown-item" class (Write Review, Instructor Panel, etc.)
     this.myProfileLink = page.locator('button.nav-dropdown-item', { hasText: 'My Profile' });
   }
 

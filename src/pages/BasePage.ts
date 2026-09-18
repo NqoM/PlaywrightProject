@@ -1,10 +1,8 @@
 import { Page } from '@playwright/test';
 
-/**
- * Base class every page object extends. Holds behavior common to
- * every page, so individual page objects only define what's unique
- * to that screen.
- */
+
+// Shared base class - Holds common behavior for all page objects. 
+// Each page object extends this class, so they only need to define what's unique to that screen.
 export class BasePage {
   readonly page: Page;
 

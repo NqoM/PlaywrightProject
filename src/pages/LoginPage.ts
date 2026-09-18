@@ -15,7 +15,7 @@ export class LoginPage extends BasePage {
   }
 
 
-  //Fills in the login form
+  //Fills in the login form and submits it.
   async login(username: string, password: string) {
     await this.goto('/#practice');
     await this.usernameInput.fill(username);
